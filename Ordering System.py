@@ -1,5 +1,4 @@
 from tkinter import *
-import tkinter.font as tkFont
 
 class Orders:
     def __init__(self, name, phone_number, items):
@@ -17,8 +16,16 @@ class Display:
         self.order_frame = Frame(parent, bg="pink")
         self.order_confirmation_frame = Frame(parent, bg="pink")
 
+        home_title = Label(self.home_frame, text="Bobalicious", bg="hot pink", width=40, pady=4, font=(24))
+        home_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
+        menu_but = Button(self.home_frame, text="View Menu", command=self.change_to_menu, width=half_wd)
+        menu_but.grid(row=1, column=1, padx=2, pady=4)
+        order_but = Button(self.home_frame, text="Place an order", command=self.change_to_order, width=half_wd)
+        order_but.grid(row=2, column=1, padx=2, pady=4)
+        self.home_frame.pack()
 
-        menu_title = Label(self.menu_frame, text="Menu", bg="hot pink", pady=4, font=(24))
+
+        menu_title = Label(self.menu_frame, text="Menu", bg="hot pink", pady=4)
         menu_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
         column_1 = Label(self.menu_frame, text="Name", width=standard_wd, bg="pink")
         column_1.grid(row=1, column=0, padx=2, pady=2)
@@ -62,7 +69,20 @@ class Display:
         item_5_large = Label(self.menu_frame, text="$11.70", width=half_wd, bg="pink")
         item_5_large.grid(row=6, column=2, padx=2, pady=2)
 
+        back_but = Button(self.menu_frame, text="Back to home", command=self.change_to_home, width=half_wd)
+        back_but.grid(row=7, column=0, columnspan=3, padx=2, pady=4)
+
+    def change_to_menu(self):
+        self.home_frame.pack_forget()
         self.menu_frame.pack()
+
+    def change_to_order(self):
+        self.home_frame.pack_forget()
+        self.order_frame.pack()
+
+    def change_to_home(self):
+        self.menu_frame.pack_forget()
+        self.home_frame.pack()
 
 
 
