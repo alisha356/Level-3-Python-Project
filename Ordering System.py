@@ -108,10 +108,10 @@ class Display:
         back_but_order = Button(self.order_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
         back_but_order.grid(row=3, column=2, padx=2, pady=4)
 
-        order_info_title = Label(self.order_info_frame, text="Complete order", bg="hot pink", pady=4)
-        order_info_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
-        items_lab = Label(self.order_info_frame, text="Items;", width=self.standard_wd, bg="pink")
-        items_lab.grid(row=2, column=0, columnspan=2, padx=2, pady=2)
+        # order_info_title = Label(self.order_info_frame, text="Complete order", bg="hot pink", pady=4)
+        # order_info_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+        # items_lab = Label(self.order_info_frame, text="Items;", width=self.standard_wd, bg="pink")
+        # items_lab.grid(row=2, column=0, columnspan=2, padx=2, pady=2)
 
         order_confirmation_title = Label(self.order_confirmation_frame, text="Order sucessful!", bg="hot pink", pady=4, width=self.standard_wd)
         order_confirmation_title.grid(row=0, column=0, sticky=E+W)
@@ -142,6 +142,10 @@ class Display:
     def change_to_order_info(self):
         num=3
         self.order_frame.pack_forget()
+        order_info_title = Label(self.order_info_frame, text="Complete order", bg="hot pink", pady=4)
+        order_info_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+        items_lab = Label(self.order_info_frame, text="Items;", width=self.standard_wd, bg="pink")
+        items_lab.grid(row=2, column=0, columnspan=2, padx=2, pady=2)
         self.order_info_frame.pack()
         for item in self.order:
             i = Label(self.order_info_frame, text=f"{item[1]} x {item[2]} {item[0]}", width=self.standard_wd, bg="pink").grid(row=num, column=0, padx=2, pady=2)
@@ -196,6 +200,11 @@ class Display:
         except ValueError:
             messagebox.showerror("Error", "Please use a number as your phone number to continue.")
             return
+        self.name_ent.delete(0, "end")
+        self.phone_ent.delete(0, "end")
+        self.name_ent.focus()
+        for widget in self.order_info_frame.winfo_children():
+            widget.destroy()
         self.order_info_frame.pack_forget()
         self.order_confirmation_info.config(text=f"Thanks for your order {name}\nYour order number is:")
         self.display_order_number.config(text=str(self.order_number))
