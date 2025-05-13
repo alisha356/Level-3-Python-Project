@@ -85,8 +85,10 @@ class Display:
         item_5_small.grid(row=6, column=1, padx=2, pady=2)
         item_5_large = Label(self.menu_frame, text="$11.70", width=self.half_wd, bg="pink")
         item_5_large.grid(row=6, column=2, padx=2, pady=2)
+        self.order_back_but = Button(self.menu_frame, text="Back to order", command=self.change_to_order, width=self.half_wd, state=DISABLED)
+        self.order_back_but.grid(row=7, column=0, columnspan=2, padx=2, pady=4)
         back_but_menu = Button(self.menu_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
-        back_but_menu.grid(row=7, column=0, columnspan=3, padx=2, pady=4)
+        back_but_menu.grid(row=7, column=1, columnspan=2, padx=2, pady=4)
 
         order_title = Label(self.order_frame, text="Order", bg="hot pink", pady=4)
         order_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
@@ -101,17 +103,16 @@ class Display:
         self.quantity.grid(row=2, column=1)
         self.size = OptionMenu(self.order_frame, self.size_chosen, *self.size_options)
         self.size.grid(row=2, column=2)
+        self.current_total = Label(self.order_frame, text=f"Current total is ${round(self.total_cost, 1)}", bg="pink")
+        self.current_total.grid(row=3, column=0, columnspan=3)
         add_item_but = Button(self.order_frame, text="Add to order", command=self.add_item, width=self.half_wd)
-        add_item_but.grid(row=3, column=0, padx=2, pady=4)
-        self.cont_but = Button(self.order_frame, text="Continue", command=self.change_to_order_info, width=self.half_wd, state=DISABLED)
-        self.cont_but.grid(row=3, column=1, padx=2, pady=4)
+        add_item_but.grid(row=4, column=0, padx=2, pady=4)
+        view_menu = Button(self.order_frame, text="View menu", command=self.change_to_menu, width=self.half_wd)
+        view_menu.grid(row=4, column=1, padx=2, pady=4)
         back_but_order = Button(self.order_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
-        back_but_order.grid(row=3, column=2, padx=2, pady=4)
-
-        # order_info_title = Label(self.order_info_frame, text="Complete order", bg="hot pink", pady=4)
-        # order_info_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
-        # items_lab = Label(self.order_info_frame, text="Items;", width=self.standard_wd, bg="pink")
-        # items_lab.grid(row=2, column=0, columnspan=2, padx=2, pady=2)
+        back_but_order.grid(row=4, column=2, padx=2, pady=4)
+        self.cont_but = Button(self.order_frame, text="Continue", command=self.change_to_order_info, width=self.half_wd, state=DISABLED)
+        self.cont_but.grid(row=5, column=1, padx=2, pady=4)
 
         order_confirmation_title = Label(self.order_confirmation_frame, text="Order sucessful!", bg="hot pink", pady=4, width=self.standard_wd)
         order_confirmation_title.grid(row=0, column=0, sticky=E+W)
@@ -124,20 +125,29 @@ class Display:
 
     def change_to_menu(self):
         self.home_frame.pack_forget()
+        self.order_frame.pack_forget()
         self.menu_frame.pack()
 
     def change_to_order(self):
         self.home_frame.pack_forget()
+        self.menu_frame.pack_forget()
+        self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
+        self.order_back_but.config(state=NORMAL)
         self.order_frame.pack()
 
     def change_to_home(self):
         self.menu_frame.pack_forget()
         self.order_frame.pack_forget()
+        self.order_info_frame.pack_forget()
         self.order_confirmation_frame.pack_forget()
         self.total_cost = 0
         self.order = []
+        self.order_back_but.config(state=DISABLED)
         self.cont_but.config(state=DISABLED)
         self.home_frame.pack()
+        self.item_chosen.set(value="Select an item")
+        self.quantity_chosen.set(value="Quantity")
+        self.size_chosen.set(value="Size")
 
     def change_to_order_info(self):
         num=3
@@ -168,8 +178,10 @@ class Display:
         self.phone_ent.grid(row=num, column=1, padx=2, pady=2)
         self.name_ent.focus()
         num+=1
-        self.finish_but=Button(self.order_info_frame, text="Finish Order", command=self.change_to_order_confirm, width=self.half_wd)
-        self.finish_but.grid(row=num, column=0, columnspan=2, padx=2, pady=2)
+        self.finish_but=Button(self.order_info_frame, text="Cancel order", command=self.change_to_home, width=self.half_wd)
+        self.finish_but.grid(row=num, column=0, padx=2, pady=2)
+        self.finish_but=Button(self.order_info_frame, text="Finish order", command=self.change_to_order_confirm, width=self.half_wd)
+        self.finish_but.grid(row=num, column=1, padx=2, pady=2)
 
     def add_item(self):
         if self.item_chosen.get() == "Select an item" or self.quantity_chosen.get() == "Quantity" or self.size_chosen.get() == "Size":
@@ -179,9 +191,13 @@ class Display:
             self.cont_but.config(state=NORMAL)
             self.order.append([self.item_chosen.get(), self.quantity_chosen.get(), self.size_chosen.get(), self.menu_items[self.item_chosen.get()]["price"][self.size_chosen.get()]])
             self.total_cost += round(self.menu_items[self.item_chosen.get()]["price"][self.size_chosen.get()]*float(self.quantity_chosen.get()), 1)
+            self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
+            self.item_chosen.set(value="Select an item")
+            self.quantity_chosen.set(value="Quantity")
+            self.size_chosen.set(value="Size")
     
     def change_to_order_confirm(self):
-        name = self.name_var.get().capitalize()
+        name = self.name_var.get().title()
         phone = self.phone_var.get()
         if phone == "" and name == "":
             messagebox.showerror("Error", "Please input your name and phone number to continue.")
@@ -195,6 +211,7 @@ class Display:
         elif len(phone)<3:
             messagebox.showerror("Error", "The number you have given is too short to be your number. Please try again.")
             return
+        phone = phone.replace(" ", "")
         try:
             phone = int(phone)
         except ValueError:
