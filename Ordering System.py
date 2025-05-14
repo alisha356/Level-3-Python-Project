@@ -2,13 +2,17 @@ from tkinter import *
 from tkinter import messagebox
 
 class Orders:
+    """Support class for the ordering system"""
+
     def __init__(self, id, name, phone_number, items):
+        """Create the objects used in the class."""
         self.id = id
         self.name = name
         self.phone_number = phone_number
         self.items = items
 
     def display_info(self, f, r):
+        """Displays the order information stored"""
         id_lab = Label(f, text="Order number:", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
         id = Label(f, text=self.id, bg="light blue").grid(row=r, column=1, padx=2, pady=2)
         r+=1
@@ -22,13 +26,15 @@ class Orders:
         for b in self.items:
             i = Label(f, text=f"{b[1]} x {b[2]} {b[0]}", bg="light blue").grid(row=r, column=1, padx=2, pady=2)
             r+=1
-            # print(b)
         blank_space = Label(f, text="\n", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
         r+=1
         return r
 
+
 class Display:
+    """Main class, this sets up the frames"""
     def __init__(self, parent):
+        """Create the objects used in the class as well as some of the widgets on the frames."""
         self.standard_wd = 24
         self.half_wd = 12
         self.home_frame = Frame(parent, bg="pink")
@@ -38,7 +44,6 @@ class Display:
         self.order_confirmation_frame = Frame(parent, bg="pink")
         self.admin_login_frame = Frame(parent, bg="light blue")
         self.admin_view_frame = Frame(parent, bg="light blue")
-
         self.orders_list = []
         self.order_number = 1
         self.total_cost = 0
@@ -50,16 +55,14 @@ class Display:
                            "Mango Yakult Tea":{"Name":"Mango Yakult Tea", "Price":{"Small":8.7, "Large":11.7}}}
         self.quantity_options = [1, 2, 3, 4]
         self.size_options = ["Small", "Large"]
-
         self.item_chosen = StringVar(value="Select an item")
         self.quantity_chosen = StringVar(value="Quantity")
         self.size_chosen = StringVar(value="Size")
-
         self.name_var = StringVar()
         self.phone_var = StringVar()
         self.password_var = StringVar()
 
-
+        """Home screen widgets"""
         home_title = Label(self.home_frame, text="Bobalicious", bg="hot pink", width=40, pady=4, font=(24))
         home_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
         admin_but = Button(self.home_frame, text="Admin Login", command=self.change_to_admin_login, width=self.half_wd)
@@ -70,6 +73,7 @@ class Display:
         order_but.grid(row=2, column=0, columnspan=2, padx=2, pady=4)
         self.home_frame.pack()
 
+        """Menu screen widgets"""
         menu_title = Label(self.menu_frame, text="Menu", bg="hot pink", pady=4)
         menu_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
         column_1 = Label(self.menu_frame, text="Name;", width=self.standard_wd, bg="pink")
@@ -78,7 +82,6 @@ class Display:
         column_2.grid(row=1, column=1, padx=2, pady=2)
         column_3 = Label(self.menu_frame, text="Large;", width=self.half_wd, bg="pink")
         column_3.grid(row=1, column=2, padx=2, pady=2)
-
         row_num = 2
         for n in self.menu_items:
             display_name = Label(self.menu_frame, text=self.menu_items[n]["Name"], width=self.standard_wd, bg="pink").grid(row=row_num, column=0, padx=2, pady=2)
@@ -90,6 +93,7 @@ class Display:
         back_but_menu = Button(self.menu_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
         back_but_menu.grid(row=7, column=1, columnspan=2, padx=2, pady=4)
 
+        """Order item selection widgets"""
         order_title = Label(self.order_frame, text="Order", bg="hot pink", pady=4)
         order_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
         instruction_lab = Label(self.order_frame, text="Select the item, quantity and size you want from the drop down lists :)\nPlease note that going back to the main menu will cause your current order to be discarded.", bg="pink", pady=4)
@@ -114,6 +118,7 @@ class Display:
         self.cont_but = Button(self.order_frame, text="Continue", command=self.change_to_order_info, width=self.half_wd, state=DISABLED)
         self.cont_but.grid(row=5, column=1, padx=2, pady=4)
 
+        """Order confirmation widgets"""
         order_confirmation_title = Label(self.order_confirmation_frame, text="Order sucessful!", bg="hot pink", pady=4, width=self.standard_wd)
         order_confirmation_title.grid(row=0, column=0, sticky=E+W)
         self.order_confirmation_info = Label(self.order_confirmation_frame, text="Thanks for your order (name)\nYour order number is:", bg="pink", width=self.standard_wd)
@@ -123,6 +128,7 @@ class Display:
         back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
         back_but_confirmation.grid(row=5, column=0, padx=2, pady=4)
 
+        """Admin login widgets"""
         admin_login_title = Label(self.admin_login_frame, text="Admin Login", bg="light blue", pady=4, width=self.standard_wd)
         admin_login_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
         self.password_lab = Label(self.admin_login_frame, text="Password:", width=self.standard_wd, bg="light blue")
@@ -134,31 +140,37 @@ class Display:
         login_but = Button(self.admin_login_frame, text="Log in", command=self.change_to_admin_view, width=self.half_wd)
         login_but.grid(row=2, column=1, padx=2, pady=4)
 
-        # admin_view_title = Label(self.admin_view_frame, text="Current orders;", bg="light blue", pady=4, width=self.standard_wd)
-        # admin_view_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
-
 
     def change_to_menu(self):
+        """Hides the home and order frames and displays the menu"""
         self.home_frame.pack_forget()
         self.order_frame.pack_forget()
         self.menu_frame.pack()
 
+
     def change_to_order(self):
+        """Hides the home and menu screens and displays the order frame"""
         self.home_frame.pack_forget()
         self.menu_frame.pack_forget()
         self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
         self.order_back_but.config(state=NORMAL)
         self.order_frame.pack()
 
+
     def change_to_home(self):
+        """Hides all of the frames, then displays the home screen"""
         self.menu_frame.pack_forget()
         self.order_frame.pack_forget()
         self.order_info_frame.pack_forget()
         self.order_confirmation_frame.pack_forget()
         self.admin_login_frame.pack_forget()
+
+        """Destroys all of the widgets in the admin view frame, so when it is displayed again they don't overlap"""
         for widget in self.admin_view_frame.winfo_children():
             widget.destroy()
         self.admin_view_frame.pack_forget()
+
+        """Resets all of the information to do with the current order"""
         self.total_cost = 0
         self.order = []
         self.order_back_but.config(state=DISABLED)
@@ -168,7 +180,24 @@ class Display:
         self.quantity_chosen.set(value="Quantity")
         self.size_chosen.set(value="Size")
 
+
+    def add_item(self):
+        """Adds an item to the user's order if they have chosen an option from all three optionmenus, then resets the values"""
+        if self.item_chosen.get() == "Select an item" or self.quantity_chosen.get() == "Quantity" or self.size_chosen.get() == "Size":
+            messagebox.showerror("Error", "You must choose an option for all three sections before continuing. Please try again.")
+        else:
+            messagebox.showinfo("Added", "Item added to order.")
+            self.cont_but.config(state=NORMAL)
+            self.order.append([self.item_chosen.get(), self.quantity_chosen.get(), self.size_chosen.get(), self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]])
+            self.total_cost += round(self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]*float(self.quantity_chosen.get()), 1)
+            self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
+            self.item_chosen.set(value="Select an item")
+            self.quantity_chosen.set(value="Quantity")
+            self.size_chosen.set(value="Size")
+
+
     def change_to_order_info(self):
+        """Hides the order frame and sets up then displays the frame collecting the user's data"""
         num=3
         self.order_frame.pack_forget()
         order_info_title = Label(self.order_info_frame, text="Complete order", bg="hot pink", pady=4)
@@ -176,10 +205,14 @@ class Display:
         items_lab = Label(self.order_info_frame, text="Items;", width=self.standard_wd, bg="pink")
         items_lab.grid(row=2, column=0, columnspan=2, padx=2, pady=2)
         self.order_info_frame.pack()
+
+        """Sets up labels to display the items in the user's order"""
         for item in self.order:
             i = Label(self.order_info_frame, text=f"{item[1]} x {item[2]} {item[0]}", width=self.standard_wd, bg="pink").grid(row=num, column=0, padx=2, pady=2)
             p = Label(self.order_info_frame, text=("$" + str(item[3]), "each"), width=self.half_wd, bg="pink").grid(row=num, column=1, padx=2, pady=2)
             num+=1
+        
+        """Sets up other information for the user, including the entry widgets asking for their details, under their items"""
         self.total_cost_lab = Label(self.order_info_frame, text=f"Your total is ${round(self.total_cost, 1)}", bg="pink")
         self.total_cost_lab.grid(row=num, column=0, columnspan=2, padx=2, pady=2)
         num+=1
@@ -200,24 +233,17 @@ class Display:
         self.cancel_but.grid(row=num, column=0, padx=2, pady=2)
         self.finish_but=Button(self.order_info_frame, text="Finish order", command=self.change_to_order_confirm, width=self.half_wd)
         self.finish_but.grid(row=num, column=1, padx=2, pady=2)
+
+        """Ensures the entry widgets are empty and the focus is on the top one"""
         self.name_ent.delete(0, "end")
         self.phone_ent.delete(0, "end")
         self.name_ent.focus()
 
-    def add_item(self):
-        if self.item_chosen.get() == "Select an item" or self.quantity_chosen.get() == "Quantity" or self.size_chosen.get() == "Size":
-            messagebox.showerror("Error", "You must choose an option for all three sections before continuing. Please try again.")
-        else:
-            messagebox.showinfo("Added", "Item added to order.")
-            self.cont_but.config(state=NORMAL)
-            self.order.append([self.item_chosen.get(), self.quantity_chosen.get(), self.size_chosen.get(), self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]])
-            self.total_cost += round(self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]*float(self.quantity_chosen.get()), 1)
-            self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
-            self.item_chosen.set(value="Select an item")
-            self.quantity_chosen.set(value="Quantity")
-            self.size_chosen.set(value="Size")
     
     def change_to_order_confirm(self):
+        """Checks if the user has entered values into both entry widgets, then if the phone number is long enough 
+        before destroying all of the widgets in the order info frame, so when it is displayed again the new widgets 
+        don't overlay previous ones, then adds the user's order to a list as an object of the support class"""
         name = self.name_var.get().title()
         phone = self.phone_var.get()
         if phone == "" and name == "":
@@ -251,11 +277,14 @@ class Display:
         self.order_confirmation_frame.pack()
 
     def change_to_admin_login(self):
+        """Hides the home frame then displays the admin login frame, focusing on the password entry widget"""
         self.home_frame.pack_forget()
         self.admin_login_frame.pack()
         self.password_ent.focus()
 
     def change_to_admin_view(self):
+        """Ensures the user has entered a password, then checks if it is correct, if it is, the admin login 
+        frame is hidden and the admin view frame is displayed, if not, the user is told to try again"""
         password = self.password_var.get()
         self.password_ent.delete(0, "end")
         self.password_ent.focus()
@@ -274,19 +303,21 @@ class Display:
         admin_view_title = Label(self.admin_view_frame, text="Current orders;", bg="light blue", pady=4, width=self.standard_wd)
         admin_view_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
         self.admin_view_frame.pack()
+
+        """Checks if there are any orders, if not, the program displays 'None', if there are, 
+        it runs the display_info function (defined in the support class) on every order in the list"""
         if len(self.orders_list) == 0:
             order = Label(self.admin_view_frame, text="None", bg="light blue", width=self.standard_wd)
             order.grid(row=1, column=0, columnspan=2, sticky=E+W)
             back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
-            back_but_admin_view.grid(row=2, column=0, padx=2, pady=4)
+            back_but_admin_view.grid(row=2, column=0, columnspan=2, padx=2, pady=4)
         else:
             row = 1
             for o in self.orders_list:
                 row = o.display_info(self.admin_view_frame, row)
-                # row += 1
-                print(row)
             back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
             back_but_admin_view.grid(row=row, column=0, columnspan=2, padx=2, pady=4)
+
 
 if __name__ == "__main__":
     root = Tk()
