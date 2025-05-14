@@ -37,6 +37,7 @@ class Display:
         """Create the objects used in the class as well as some of the widgets on the frames."""
         self.standard_wd = 24
         self.half_wd = 12
+        self.amount_of_rows = 1
         self.home_frame = Frame(parent, bg="pink")
         self.menu_frame = Frame(parent, bg="pink")
         self.order_frame = Frame(parent, bg="pink")
@@ -44,6 +45,7 @@ class Display:
         self.order_confirmation_frame = Frame(parent, bg="pink")
         self.admin_login_frame = Frame(parent, bg="light blue")
         self.admin_view_frame = Frame(parent, bg="light blue")
+        self.max_reached_frame = Frame(parent, bg="pink")
         self.orders_list = []
         self.order_number = 1
         self.total_cost = 0
@@ -125,8 +127,8 @@ class Display:
         self.order_confirmation_info.grid(row=1, column=0, padx=2, pady=2)
         self.display_order_number = Label(self.order_confirmation_frame, text="(Order num)", bg="pink", font=(24), width=self.standard_wd)
         self.display_order_number.grid(row=2, column=0, rowspan=3, padx=2, pady=2)
-        back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
-        back_but_confirmation.grid(row=5, column=0, padx=2, pady=4)
+        # back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
+        # back_but_confirmation.grid(row=5, column=0, padx=2, pady=4)
 
         """Admin login widgets"""
         admin_login_title = Label(self.admin_login_frame, text="Admin Login", bg="light blue", pady=4, width=self.standard_wd)
@@ -135,10 +137,17 @@ class Display:
         self.password_lab.grid(row=1, column=0, padx=2, pady=2)
         self.password_ent = Entry(self.admin_login_frame, textvariable=self.password_var, width=self.standard_wd)
         self.password_ent.grid(row=1, column=1, padx=2, pady=2)
-        back_but_admin_login = Button(self.admin_login_frame, text="Back", command=self.change_to_home, width=self.half_wd)
-        back_but_admin_login.grid(row=2, column=0, padx=2, pady=4)
+        # self.back_but_admin_login = Button(self.admin_login_frame, text="Back", command=self.change_to_home, width=self.half_wd)
+        # self.back_but_admin_login.grid(row=2, column=0, padx=2, pady=4)
         login_but = Button(self.admin_login_frame, text="Log in", command=self.change_to_admin_view, width=self.half_wd)
         login_but.grid(row=2, column=1, padx=2, pady=4)
+
+        """Max reached widgets"""
+        max_reached_lab = Label(self.max_reached_frame, text="Unfortunately we cannot take anymore orders tday.\nWe apologise for any inconvenience.\n\nWe look forward to seeing you tomorrow!", bg="pink")
+        max_reached_lab.grid(row=0, column=0, padx=2, pady=2)
+        admin_login_but = Button(self.max_reached_frame, text="Admin login", command=self.change_to_admin_login, width=self.half_wd)
+        admin_login_but.grid(row=1, column=0, padx=2, pady=4)
+
 
 
     def change_to_menu(self):
@@ -273,14 +282,33 @@ class Display:
         self.order_confirmation_info.config(text=f"Thanks for your order {name}\nYour order number is:")
         self.display_order_number.config(text=str(self.order_number))
         self.orders_list.append(Orders(self.order_number, name, phone, self.order))
+        self.amount_of_rows += len(self.order) + 5
         self.order_number += 1
         self.order_confirmation_frame.pack()
+        if self.amount_of_rows >= 22:
+            back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_max_reached, width=self.half_wd)
+        else:
+            back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
+        back_but_confirmation.grid(row=5, column=0, padx=2, pady=4)
 
     def change_to_admin_login(self):
-        """Hides the home frame then displays the admin login frame, focusing on the password entry widget"""
+        """Hides the home and order confirmation frames then displays the admin login frame, focusing on the password entry widget"""
         self.home_frame.pack_forget()
+        self.order_confirmation_frame.pack_forget()
+        self.max_reached_frame.pack_forget()
+        if self.amount_of_rows >= 22:
+            self.back_but_admin_login = Button(self.admin_login_frame, text="Back", command=self.change_to_max_reached, width=self.half_wd)
+        else:
+            self.back_but_admin_login = Button(self.admin_login_frame, text="Back", command=self.change_to_home, width=self.half_wd)
+        self.back_but_admin_login.grid(row=2, column=0, padx=2, pady=4)
         self.admin_login_frame.pack()
         self.password_ent.focus()
+
+    def change_to_max_reached(self):
+        self.order_confirmation_frame.pack_forget()
+        self.admin_login_frame.pack_forget()
+        self.admin_view_frame.pack_forget()
+        self.max_reached_frame.pack()
 
     def change_to_admin_view(self):
         """Ensures the user has entered a password, then checks if it is correct, if it is, the admin login 
@@ -315,9 +343,11 @@ class Display:
             row = 1
             for o in self.orders_list:
                 row = o.display_info(self.admin_view_frame, row)
-            back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
+            if self.amount_of_rows >= 22:
+                back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_max_reached, width=self.half_wd)
+            else:
+                back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
             back_but_admin_view.grid(row=row, column=0, columnspan=2, padx=2, pady=4)
-
 
 if __name__ == "__main__":
     root = Tk()
