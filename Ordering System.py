@@ -8,6 +8,24 @@ class Orders:
         self.phone_number = phone_number
         self.items = items
 
+    def display_info(self, f, r):
+        id_lab = Label(f, text="Order number:", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
+        id = Label(f, text=self.id, bg="light blue").grid(row=r, column=1, padx=2, pady=2)
+        r+=1
+        name_lab = Label(f, text="Name:", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
+        n = Label(f, text=self.name, bg="light blue").grid(row=r, column=1, padx=2, pady=2)
+        r+=1
+        phone_lab = Label(f, text="Phone number:", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
+        pn = Label(f, text=self.phone_number, bg="light blue").grid(row=r, column=1, padx=2, pady=2)
+        r+=1
+        items_lab = Label(f, text="Items:", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
+        for b in self.items:
+            i = Label(f, text=f"{b[1]} x {b[2]} {b[0]}", bg="light blue").grid(row=r, column=1, padx=2, pady=2)
+            r+=1
+            # print(b)
+        blank_space = Label(f, text="\n", bg="light blue").grid(row=r, column=0, padx=2, pady=2, sticky=W)
+        r+=1
+        return r
 
 class Display:
     def __init__(self, parent):
@@ -18,16 +36,18 @@ class Display:
         self.order_frame = Frame(parent, bg="pink")
         self.order_info_frame = Frame(parent, bg="pink")
         self.order_confirmation_frame = Frame(parent, bg="pink")
+        self.admin_login_frame = Frame(parent, bg="light blue")
+        self.admin_view_frame = Frame(parent, bg="light blue")
 
         self.orders_list = []
         self.order_number = 1
         self.total_cost = 0
         self.order = []
-        self.menu_items = {"Classic Pearl Milk Tea":{"name":"Classic Pearl Milk Tea", "price":{"Small":8.5, "Large":10.5}}, 
-                           "Brown Sugar Milk Tea":{"name":"Brown Sugar Milk Tea", "price":{"Small":8.9, "Large":11.9}}, 
-                           "Taro Milk Tea":{"name":"Taro Milk Tea", "price":{"Small":9, "Large":12}}, 
-                           "Passionfruit Green Tea":{"name":"Passionfruit Green Tea", "price":{"Small":9.2, "Large":12.2}}, 
-                           "Mango Yakult Tea":{"name":"Mango Yakult Tea", "price":{"Small":8.7, "Large":11.7}}}
+        self.menu_items = {"Classic Pearl Milk Tea":{"Name":"Classic Pearl Milk Tea", "Price":{"Small":8.5, "Large":10.5}}, 
+                           "Brown Sugar Milk Tea":{"Name":"Brown Sugar Milk Tea", "Price":{"Small":8.9, "Large":11.9}}, 
+                           "Taro Milk Tea":{"Name":"Taro Milk Tea", "Price":{"Small":9, "Large":12}}, 
+                           "Passionfruit Green Tea":{"Name":"Passionfruit Green Tea", "Price":{"Small":9.2, "Large":12.2}}, 
+                           "Mango Yakult Tea":{"Name":"Mango Yakult Tea", "Price":{"Small":8.7, "Large":11.7}}}
         self.quantity_options = [1, 2, 3, 4]
         self.size_options = ["Small", "Large"]
 
@@ -37,14 +57,17 @@ class Display:
 
         self.name_var = StringVar()
         self.phone_var = StringVar()
+        self.password_var = StringVar()
 
 
         home_title = Label(self.home_frame, text="Bobalicious", bg="hot pink", width=40, pady=4, font=(24))
-        home_title.grid(row=0, column=0, columnspan=3, sticky=E+W)
+        home_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+        admin_but = Button(self.home_frame, text="Admin Login", command=self.change_to_admin_login, width=self.half_wd)
+        admin_but.grid(row=0, column=0, padx=2, pady=2, sticky=W)
         menu_but = Button(self.home_frame, text="View Menu", command=self.change_to_menu, width=self.half_wd)
-        menu_but.grid(row=1, column=1, padx=2, pady=4)
+        menu_but.grid(row=1, column=0, columnspan=2, padx=2, pady=4)
         order_but = Button(self.home_frame, text="Place an order", command=self.change_to_order, width=self.half_wd)
-        order_but.grid(row=2, column=1, padx=2, pady=4)
+        order_but.grid(row=2, column=0, columnspan=2, padx=2, pady=4)
         self.home_frame.pack()
 
         menu_title = Label(self.menu_frame, text="Menu", bg="hot pink", pady=4)
@@ -55,36 +78,13 @@ class Display:
         column_2.grid(row=1, column=1, padx=2, pady=2)
         column_3 = Label(self.menu_frame, text="Large;", width=self.half_wd, bg="pink")
         column_3.grid(row=1, column=2, padx=2, pady=2)
-        item_1 = Label(self.menu_frame, text="Classic Pearl Milk Tea", width=self.standard_wd, bg="pink")
-        item_1.grid(row=2, column=0, padx=2, pady=2)
-        item_1_small = Label(self.menu_frame, text="$8.50", width=self.half_wd, bg="pink")
-        item_1_small.grid(row=2, column=1, padx=2, pady=2)
-        item_1_large = Label(self.menu_frame, text="$10.50", width=self.half_wd, bg="pink")
-        item_1_large.grid(row=2, column=2, padx=2, pady=2)
-        item_2 = Label(self.menu_frame, text="Brown Sugar Milk Tea", width=self.standard_wd, bg="pink")
-        item_2.grid(row=3, column=0, padx=2, pady=2)
-        item_2_small = Label(self.menu_frame, text="$8.90", width=self.half_wd, bg="pink")
-        item_2_small.grid(row=3, column=1, padx=2, pady=2)
-        item_2_large = Label(self.menu_frame, text="$11.90", width=self.half_wd, bg="pink")
-        item_2_large.grid(row=3, column=2, padx=2, pady=2)
-        item_3 = Label(self.menu_frame, text="Taro Milk Tea", width=self.standard_wd, bg="pink")
-        item_3.grid(row=4, column=0, padx=2, pady=2)
-        item_3_small = Label(self.menu_frame, text="$9.00", width=self.half_wd, bg="pink")
-        item_3_small.grid(row=4, column=1, padx=2, pady=2)
-        item_3_large = Label(self.menu_frame, text="$12.00", width=self.half_wd, bg="pink")
-        item_3_large.grid(row=4, column=2, padx=2, pady=2)
-        item_4 = Label(self.menu_frame, text="Passionfruit Green Tea", width=self.standard_wd, bg="pink")
-        item_4.grid(row=5, column=0, padx=2, pady=2)
-        item_4_small = Label(self.menu_frame, text="$9.20", width=self.half_wd, bg="pink")
-        item_4_small.grid(row=5, column=1, padx=2, pady=2)
-        item_4_large = Label(self.menu_frame, text="$12.20", width=self.half_wd, bg="pink")
-        item_4_large.grid(row=5, column=2, padx=2, pady=2)
-        item_5 = Label(self.menu_frame, text="Mango Yakult Tea", width=self.standard_wd, bg="pink")
-        item_5.grid(row=6, column=0, padx=2, pady=2)
-        item_5_small = Label(self.menu_frame, text="$8.70", width=self.half_wd, bg="pink")
-        item_5_small.grid(row=6, column=1, padx=2, pady=2)
-        item_5_large = Label(self.menu_frame, text="$11.70", width=self.half_wd, bg="pink")
-        item_5_large.grid(row=6, column=2, padx=2, pady=2)
+
+        row_num = 2
+        for n in self.menu_items:
+            display_name = Label(self.menu_frame, text=self.menu_items[n]["Name"], width=self.standard_wd, bg="pink").grid(row=row_num, column=0, padx=2, pady=2)
+            display_small = Label(self.menu_frame, text=f"${self.menu_items[n]['Price']['Small']}", width=self.half_wd, bg="pink").grid(row=row_num, column=1, padx=2, pady=2)
+            display_large = Label(self.menu_frame, text=f"${self.menu_items[n]['Price']['Large']}", width=self.half_wd, bg="pink").grid(row=row_num, column=2, padx=2, pady=2)
+            row_num+=1
         self.order_back_but = Button(self.menu_frame, text="Back to order", command=self.change_to_order, width=self.half_wd, state=DISABLED)
         self.order_back_but.grid(row=7, column=0, columnspan=2, padx=2, pady=4)
         back_but_menu = Button(self.menu_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
@@ -96,7 +96,7 @@ class Display:
         instruction_lab.grid(row=1, column=0, columnspan=3)
         item_names = []
         for i in self.menu_items:
-            item_names.append(self.menu_items[i]["name"])
+            item_names.append(self.menu_items[i]["Name"])
         self.item = OptionMenu(self.order_frame, self.item_chosen, *item_names)
         self.item.grid(row=2, column=0)
         self.quantity = OptionMenu(self.order_frame, self.quantity_chosen, *self.quantity_options)
@@ -123,6 +123,21 @@ class Display:
         back_but_confirmation = Button(self.order_confirmation_frame, text="Back to home", command=self.change_to_home, width=self.half_wd)
         back_but_confirmation.grid(row=5, column=0, padx=2, pady=4)
 
+        admin_login_title = Label(self.admin_login_frame, text="Admin Login", bg="light blue", pady=4, width=self.standard_wd)
+        admin_login_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+        self.password_lab = Label(self.admin_login_frame, text="Password:", width=self.standard_wd, bg="light blue")
+        self.password_lab.grid(row=1, column=0, padx=2, pady=2)
+        self.password_ent = Entry(self.admin_login_frame, textvariable=self.password_var, width=self.standard_wd)
+        self.password_ent.grid(row=1, column=1, padx=2, pady=2)
+        back_but_admin_login = Button(self.admin_login_frame, text="Back", command=self.change_to_home, width=self.half_wd)
+        back_but_admin_login.grid(row=2, column=0, padx=2, pady=4)
+        login_but = Button(self.admin_login_frame, text="Log in", command=self.change_to_admin_view, width=self.half_wd)
+        login_but.grid(row=2, column=1, padx=2, pady=4)
+
+        # admin_view_title = Label(self.admin_view_frame, text="Current orders;", bg="light blue", pady=4, width=self.standard_wd)
+        # admin_view_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+
+
     def change_to_menu(self):
         self.home_frame.pack_forget()
         self.order_frame.pack_forget()
@@ -140,6 +155,10 @@ class Display:
         self.order_frame.pack_forget()
         self.order_info_frame.pack_forget()
         self.order_confirmation_frame.pack_forget()
+        self.admin_login_frame.pack_forget()
+        for widget in self.admin_view_frame.winfo_children():
+            widget.destroy()
+        self.admin_view_frame.pack_forget()
         self.total_cost = 0
         self.order = []
         self.order_back_but.config(state=DISABLED)
@@ -176,12 +195,14 @@ class Display:
         self.phone_lab.grid(row=num, column=0, padx=2, pady=2)
         self.phone_ent = Entry(self.order_info_frame, textvariable=self.phone_var, width=self.standard_wd)
         self.phone_ent.grid(row=num, column=1, padx=2, pady=2)
-        self.name_ent.focus()
         num+=1
-        self.finish_but=Button(self.order_info_frame, text="Cancel order", command=self.change_to_home, width=self.half_wd)
-        self.finish_but.grid(row=num, column=0, padx=2, pady=2)
+        self.cancel_but=Button(self.order_info_frame, text="Cancel order", command=self.change_to_home, width=self.half_wd)
+        self.cancel_but.grid(row=num, column=0, padx=2, pady=2)
         self.finish_but=Button(self.order_info_frame, text="Finish order", command=self.change_to_order_confirm, width=self.half_wd)
         self.finish_but.grid(row=num, column=1, padx=2, pady=2)
+        self.name_ent.delete(0, "end")
+        self.phone_ent.delete(0, "end")
+        self.name_ent.focus()
 
     def add_item(self):
         if self.item_chosen.get() == "Select an item" or self.quantity_chosen.get() == "Quantity" or self.size_chosen.get() == "Size":
@@ -189,8 +210,8 @@ class Display:
         else:
             messagebox.showinfo("Added", "Item added to order.")
             self.cont_but.config(state=NORMAL)
-            self.order.append([self.item_chosen.get(), self.quantity_chosen.get(), self.size_chosen.get(), self.menu_items[self.item_chosen.get()]["price"][self.size_chosen.get()]])
-            self.total_cost += round(self.menu_items[self.item_chosen.get()]["price"][self.size_chosen.get()]*float(self.quantity_chosen.get()), 1)
+            self.order.append([self.item_chosen.get(), self.quantity_chosen.get(), self.size_chosen.get(), self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]])
+            self.total_cost += round(self.menu_items[self.item_chosen.get()]["Price"][self.size_chosen.get()]*float(self.quantity_chosen.get()), 1)
             self.current_total.config(text=f"Current total is ${round(self.total_cost, 1)}")
             self.item_chosen.set(value="Select an item")
             self.quantity_chosen.set(value="Quantity")
@@ -208,18 +229,18 @@ class Display:
         elif phone == "":
             messagebox.showerror("Error", "Please input your phone number to continue.")
             return
-        elif len(phone)<3:
+        phone = phone.replace(" ", "")
+        if len(phone)<3:
             messagebox.showerror("Error", "The number you have given is too short to be your number. Please try again.")
             return
-        phone = phone.replace(" ", "")
         try:
             phone = int(phone)
         except ValueError:
             messagebox.showerror("Error", "Please use a number as your phone number to continue.")
             return
-        self.name_ent.delete(0, "end")
-        self.phone_ent.delete(0, "end")
-        self.name_ent.focus()
+        if phone<0:
+            messagebox.showerror("Error", "The number you have given is negative. Please use a positive value.")
+            return
         for widget in self.order_info_frame.winfo_children():
             widget.destroy()
         self.order_info_frame.pack_forget()
@@ -229,7 +250,43 @@ class Display:
         self.order_number += 1
         self.order_confirmation_frame.pack()
 
+    def change_to_admin_login(self):
+        self.home_frame.pack_forget()
+        self.admin_login_frame.pack()
+        self.password_ent.focus()
 
+    def change_to_admin_view(self):
+        password = self.password_var.get()
+        self.password_ent.delete(0, "end")
+        self.password_ent.focus()
+        if password == "":
+            messagebox.showerror("Error", "Please enter password to continue.")
+            return
+        try:
+            password = int(password)
+        except ValueError:
+            messagebox.showerror("Error", "Password incorrect. Please try again.")
+            return
+        if password != 5764:
+            messagebox.showerror("Error", "Password incorrect. Please try again.")
+            return
+        self.admin_login_frame.pack_forget()
+        admin_view_title = Label(self.admin_view_frame, text="Current orders;", bg="light blue", pady=4, width=self.standard_wd)
+        admin_view_title.grid(row=0, column=0, columnspan=2, sticky=E+W)
+        self.admin_view_frame.pack()
+        if len(self.orders_list) == 0:
+            order = Label(self.admin_view_frame, text="None", bg="light blue", width=self.standard_wd)
+            order.grid(row=1, column=0, columnspan=2, sticky=E+W)
+            back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
+            back_but_admin_view.grid(row=2, column=0, padx=2, pady=4)
+        else:
+            row = 1
+            for o in self.orders_list:
+                row = o.display_info(self.admin_view_frame, row)
+                # row += 1
+                print(row)
+            back_but_admin_view = Button(self.admin_view_frame, text="Exit", command=self.change_to_home, width=self.half_wd)
+            back_but_admin_view.grid(row=row, column=0, columnspan=2, padx=2, pady=4)
 
 if __name__ == "__main__":
     root = Tk()
